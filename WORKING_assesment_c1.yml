@@ -1,0 +1,109 @@
+#Docassemable asessment C1
+#Welcome screen Block
+#Consists of
+#Explanation of APP
+#Disclaimer
+#Continue or exit buttons
+#exit button will redirect to sa courts website
+---
+mandatory: True
+question: Federal Courts Doc. Assist
+subquestion: |
+  Welcome to Federal Courts Doc. Asisst.
+  
+  This appplication will assist you to complete a form for either the Federal Court or     the Federal Circuit Court of Australia.
+
+  ***Disclaimer:***
+  ***Any form completed using this app must be checked by a lawyer. 
+  This app does not provide legal advice.***
+  
+  If you **continue** you **accept** these terms. 
+  
+  If you do not accept you will be redirected to the South Autralian Courts website.
+  
+buttons:
+  - "I accept and want to continue": continue
+  - "I do not accept": exit
+    url: https://courts.sa.gov.au
+---
+#Court selection blocks
+#If FCC or FC selected, EVENT for correct court will run
+#Will ask quiestions to fill-out court document
+#Will place answers in column with questions asked
+#Will prepare PDF only and option to email completed form
+#ELSE if other courts selected, EVENT for incorrect court will run
+#Exit screen will explain app only prepares documents for FCC or FC
+#Can exit to FCA websites or restart app
+madatory: True
+question: |
+  Please select which jurisdiction you would like to complete a form for
+field: JCCourt
+dropdown:
+    - Supreme Court
+    - Federal Court
+    - Federal Circuit Court
+    - District Court
+    - Magistrates Court
+---
+code: |
+  if JCCourt == 'Federal Court' or JCCourt == 'Federal Circuit Court':
+    Correct_court
+  else:
+    Incorrect_court
+mandatory: True
+---
+event: Correct_court
+question: Federal Court Doc. assist
+subquestion: |
+  ### Dear ${ JCName },
+  
+  Your federal Court Document is now completed!
+
+  Questions|Answers
+  -------|-------
+  Applicant|${ JCApplicant }
+  Respondent|${ JCRespondent }
+  State|${ JCState }
+  Division|${ JCDivision }
+  Date|${ JCTodays_date }
+  Signed by|${ JCName }
+  Capacity to client|${ JCCapacity }
+attachment:
+  docx template file: FCA_formC1.docx
+  valid formats: 
+    - pdf
+buttons:
+  - Return to Beginning: restart
+---
+question: Name
+fields:
+  - Applicant: JCApplicant
+  - Respondent: JCRespondent
+  - Division: JCDivision
+    choices:
+      - Corporations
+      - Criminal
+      - Employment
+      - General
+  - Date: JCTodays_date
+  - Signed by: JCName
+  - Capacity to cient: JCCapacity
+  - Select your State or Territory: JCState 
+    choices:
+      - South Australia
+      - Western Australia
+      - Queensland
+      - New South Wales
+      - Victoria
+      - Tasmania
+      - Northern Territory
+      - Australian Capital Territory
+---
+event: Incorrect_court
+question: |
+  This app will only prepare forms for the Federal Court or the Federal Circuit Court
+buttons:
+  - Exit: exit
+    url: https://www.fedcourt.gov.au
+  - Return to Beginning: restart
+---
